@@ -10,13 +10,13 @@ const APIController = (function () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic' + btoa(clientId + ":" + clientSecret)
+                'Authorization': 'Basic ' + btoa(clientId + ":" + clientSecret)
             },
-            body: 'grant_type=authorization_code'
+            body: 'grant_type=client_credentials'
         });
         const data = await result.json();
-        console.log(data.access_token);
-        return data. data.access_token;
+        console.log(data);
+        return data.access_token;
     }
 
     const _getGenres = async (token) =>{
@@ -26,8 +26,8 @@ const APIController = (function () {
             headers : {'Authorization': 'Bearer ' + token}
         })
 
-        const data = await results.json();
-        console.log(data.categories.items);
+        const data = await result.json();
+        // console.log(data.categories.items);
         return data.categories.items;
     }
 
@@ -38,7 +38,7 @@ const APIController = (function () {
             headers : {'Authorization': 'Bearer ' + token}
         });
 
-        const data = await results.json();
+        const data = await result.json();
         return data.playlists.items;
     }
 
@@ -49,10 +49,10 @@ const APIController = (function () {
         const result = await fetch(`${tracksEndPoint}?limit=${limit}`,{
 
             method:'GET',
-            headers:{'Authorization':token}
+            headers: { 'Authorization' : 'Bearer ' + token}
         });
 
-        const data = await results.json();
+        const data = await result.json();
         return data.items;
 
     }
@@ -61,14 +61,15 @@ const APIController = (function () {
 
         const result = await fetch(`${trackEndPoint}`,{
             method:'GET',
-            headers:{'Authorization':token}
+            headers: { 'Authorization' : 'Bearer ' + token}
         });
 
-        const data = await results.json();
+        const data = await result.json();
         return data;
     }
     return {
         getToken(){
+           
             return _getToken();
         },
         getGenres(token){
@@ -81,7 +82,7 @@ const APIController = (function () {
             return _getTracks(token,tracksEndPoint);
         },
         getTrack(token, trackId){
-            return _getTrack(token,tracksEndPoint);
+            return _getTrack(token,trackId);
         }
     }
     
@@ -90,7 +91,7 @@ const APIController = (function () {
 const UIController = (function() {
     
     const DOMElements ={
-        selectGenres : '#select_genre',
+        selectGenre : '#select_genre',
         selectPlaylist : '#select_playlist',
         buttonSubmit : '#btn_submit',
         divSongDetail :'#song-detail',
@@ -101,30 +102,35 @@ const UIController = (function() {
 
         inputField() {
             return {
-                genre : document.querySelector(DOMElements.selectGenres),
-                playlist : document.querySelector(DOMElements.selectPlaylists),
+                genre : document.querySelector(DOMElements.selectGenre),
+                playlist : document.querySelector(DOMElements.selectPlaylist),
                 tracks : document.querySelector(DOMElements.divSonglist),
                 submit : document.querySelector(DOMElements.buttonSubmit),
-                songDetail :document.querySelector(DOMElements.songDetail)
+                songDetail :document.querySelector(DOMElements.divSongDetail)
             }
         },
 
         createGenre(text, value){
             const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectGenres).insertAdjacentHTML('beforeend',html);
+            document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend',html);
         },
         
-        createPlaylist(text, value){
+        createGenre(text, value) {
             const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectPlaylist).insertAdjacentElement('beforeend', html);
+            document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
+        }, 
+
+        createPlaylist(text, value) {
+            const html = `<option value="${value}">${text}</option>`;
+            document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
         },
         createTrack(id, name){
             const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
-            documents.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
+            document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
         },
 
         createTrackDetail(img, title, artist){
-            const detailDiv = document.querySelectors(DOMElements.divSongDetail);
+            const detailDiv = document.querySelector(DOMElements.divSongDetail);
             detailDiv.innerHTML = '';
             const html = 
             `
@@ -138,6 +144,7 @@ const UIController = (function() {
             <label for="artist" class="form-label col-sm-12">${artist}</label>
             </div>
             `;
+            detailDiv.insertAdjacentHTML('beforeend',html);
         },
         resetTrackDetail(){
             this.inputField().songDetail.innerHTML = '';
@@ -168,10 +175,11 @@ const APPController = (function(UICtrl, APICtrl){
     const DOMInputs = UICtrl.inputField();
 
     const loadGenre = async() =>{
-        const token = APICtrl.getToken();
+        const token = await APICtrl.getToken();
         UICtrl.storeToken(token);
         
-        const genres = APICtrl.getGenres(token);
+        const genres = await APICtrl.getGenres(token);
+        console.log(genres);
         genres.forEach(element => {
             UICtrl.createGenre(element.name, element.id);
         });
@@ -188,7 +196,8 @@ const APPController = (function(UICtrl, APICtrl){
         const playlist = await APICtrl.getPlaylistByGenre(token, genreId);  
 
         playlist.forEach(element =>{
-            UICtrl.createPlaylist(playlist.name, playlist.tracks.href);
+            console.log(element);
+            UICtrl.createPlaylist(element.name, element.tracks.href);
         });
 
     });
@@ -197,14 +206,34 @@ const APPController = (function(UICtrl, APICtrl){
         e.preventDefault();
         UICtrl.resetTracks();
 
-        const token = UICtrl.getStoredToken().token();
+        const token = UICtrl.getStoredToken().token;
         const playlistSelect = UICtrl.inputField().playlist;
         const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
         const tracks = await APICtrl.getTracks(token, tracksEndPoint);
+        console.log(tracks);
         tracks.forEach(element =>{
             UICtrl.createTrack(element.track.href, element.track.name)
         })
 
     });
+
+    DOMInputs.tracks.addEventListener('click', async (e) =>{
+        e.preventDefault();
+        UICtrl.resetTrackDetail();
+        const token = UICtrl.getStoredToken().token;
+        const trackEndPoint = e.target.id;
+        const track = await APIController.getTrack(token, trackEndPoint);
+        console.log(track)
+        UIController.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
+        
+    });
+    return {
+        init(){
+            console.log("App is starting");
+            loadGenre();
+        }
+    }
     
-})(UIController, APPController);
+})(UIController, APIController);
+
+APPController.init();
