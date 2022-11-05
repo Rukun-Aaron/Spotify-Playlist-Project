@@ -1,3 +1,16 @@
+#header {
+    padding: 20px;
+    /* background: #fff; */
+    /* background-color:  #202b38; */
+    background-color: #16213E;
+    color: #533483;
+    border-bottom: 5px solid #533483;
+    font-size: 64px;
+    font-weight: bold;
+    text-align: center;
+    /* color: #fff; */
+  
+  }
 .btn.dropdown-toggle  {
     width:150px;
     text-align:left;
@@ -23,13 +36,37 @@ img {
 }
 
 .btn-success {
-    background-color: #3b7d4a!important;
+    background-color: #FB2576!important;
+    border-color: #FB2576;
+    width: 100px;
 }
 
 .btn-success:hover {
-    background-color: #4daf64!important;
+    background-color: #FB2576!important;
+     
 }
 
 img.track {
     border: 1px solid #8a8a8a;
+}
+body {
+    background-color: #150050;
+    text-align: center;
+    
+}
+.container{
+    margin:auto;
+    width: 50%;
+    padding: 10px;
+    justify-content: left;
+}
+.form-center {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;;
+  }
+
+
+.form-label{
+    color : #ffff;
 }
