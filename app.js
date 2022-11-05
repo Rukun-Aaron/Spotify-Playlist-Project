@@ -129,7 +129,7 @@ const UIController = (function() {
             document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
         },
 
-        createTrackDetail(img, title, artist){
+        createTrackDetail(img, title, artist, preview_url){
             const detailDiv = document.querySelector(DOMElements.divSongDetail);
             detailDiv.innerHTML = '';
             const html = 
@@ -142,6 +142,9 @@ const UIController = (function() {
             </div>
             <div class="row col-sm-12 px-0">
             <label for="artist" class="form-label col-sm-12">${artist}</label>
+            </div>
+            <div class="row col-sm-12 px-0">
+            <a href=${preview_url} id="preview">Preview Song </a>
             </div>
             `;
             detailDiv.insertAdjacentHTML('beforeend',html);
@@ -169,7 +172,7 @@ const UIController = (function() {
     }
 })();
 
-
+let previewAudio = new Audio("");
 const APPController = (function(UICtrl, APICtrl){
 
     const DOMInputs = UICtrl.inputField();
@@ -216,17 +219,33 @@ const APPController = (function(UICtrl, APICtrl){
         })
 
     });
-
+   
     DOMInputs.tracks.addEventListener('click', async (e) =>{
+        previewAudio.pause();
         e.preventDefault();
         UICtrl.resetTrackDetail();
         const token = UICtrl.getStoredToken().token;
         const trackEndPoint = e.target.id;
+        console.log(e.target);
         const track = await APIController.getTrack(token, trackEndPoint);
         console.log(track)
-        UIController.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
+        previewAudio = new Audio(track.preview_url);
+        previewAudio.play();
+        UIController.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name, track.preview_url);
         
     });
+    // document.addEventListener('click', async (e) =>{
+    //     if(e.target && e.target.id == 'preview'){
+    //         console.log(e.target);
+            
+    //         previewAudio.play();
+    //     }
+    // });
+    // document.getElementById("preview").addEventListener('click', async (e) =>{
+    //     console.log(e.target);
+    // });
+
+
     return {
         init(){
             console.log("App is starting");

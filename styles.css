@@ -42,7 +42,8 @@ img {
 }
 
 .btn-success:hover {
-    background-color: #FB2576!important;
+    background-color: #fa5d9a!important;
+    border-color: #FB2576;
      
 }
 
