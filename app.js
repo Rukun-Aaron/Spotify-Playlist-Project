@@ -45,7 +45,7 @@ const APIController = (function () {
 
     const _getTracks = async (token, tracksEndPoint) =>{
 
-        const limit = 10;
+        const limit = 15;
 
         const result = await fetch(`${tracksEndPoint}?limit=${limit}`,{
 
@@ -113,13 +113,19 @@ const UIController = (function() {
         },
 
         createGenre(text, value){
-            const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend',html);
+            // const html = `<option value="${value}">${text}</option>`;
+            // document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend',html);
+            // const button = `<a class="btn-nav" href="{{ url_for('home_bp.home') }}">${text}</a>`
+            // console.log(button);
+            // document.querySelector("#nav").insertAdjacentElement('beforeend', button);
         },
         
         createGenre(text, value) {
             const html = `<option value="${value}">${text}</option>`;
             document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
+            const button = `<a class="btn-nav" href="{{ url_for('home_bp.home') }}">${text}</a>`
+            // console.log(button);
+            document.querySelector('#nav').insertAdjacentHTML('beforeend', button);
         }, 
 
         createPlaylist(text, value) {
@@ -186,7 +192,7 @@ const APPController = (function(UICtrl, APICtrl){
         UICtrl.storeToken(token);
         
         const genres = await APICtrl.getGenres(token);
-        console.log(genres);
+        // console.log(genres);
         genres.forEach(element => {
             UICtrl.createGenre(element.name, element.id);
         });
@@ -203,7 +209,7 @@ const APPController = (function(UICtrl, APICtrl){
         const playlist = await APICtrl.getPlaylistByGenre(token, genreId);  
 
         playlist.forEach(element =>{
-            console.log(element);
+            // console.log(element);
             UICtrl.createPlaylist(element.name, element.tracks.href);
         });
 
@@ -217,7 +223,7 @@ const APPController = (function(UICtrl, APICtrl){
         const playlistSelect = UICtrl.inputField().playlist;
         const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
         const tracks = await APICtrl.getTracks(token, tracksEndPoint);
-        console.log(tracks);
+        // console.log(tracks);
         tracks.forEach(element =>{
             UICtrl.createTrack(element.track.href, element.track.name)
         })
@@ -230,9 +236,9 @@ const APPController = (function(UICtrl, APICtrl){
         UICtrl.resetTrackDetail();
         const token = UICtrl.getStoredToken().token;
         const trackEndPoint = e.target.id;
-        console.log(e.target);
+        // console.log(e.target);
         const track = await APIController.getTrack(token, trackEndPoint);
-        console.log(track)
+        // console.log(track)
         // previewAudio = new Audio(track.preview_url);
         // previewAudio.play();
         UIController.createAudio(track.preview_url);
