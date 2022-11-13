@@ -194,6 +194,9 @@ const UIController = (function() {
 
 const APPController = (function(UICtrl, APICtrl){
     let randomNumber;
+    let randomGenre =[];
+    let randomPlaylist =[];
+    let randomTrack = [];
     let list_of_genres = [];
     const DOMInputs = UICtrl.inputField();
     console.log(DOMInputs);
@@ -208,16 +211,36 @@ const APPController = (function(UICtrl, APICtrl){
             list_of_genres[element.name] =element.id;
             UICtrl.createGenre(element.name, element.id);
         });
-       console.log(list_of_genres);
+    //    console.log(list_of_genres);
        generateRandomGenre();
     }
-
-    const generateRandomGenre = async()=> {
-        let randomGenreNum = Math.floor(Math.random()* Object.keys(list_of_genres).length);
-        console.log(randomGenreNum);
-        
+    function getRandomNumber(min, max){
+        let randomGenreNum = Math.floor((Math.random()* max) + min);
+        return randomGenreNum;
     }
-    
+    const generateRandomGenre = async()=> {
+        // let randomGenreNum = Math.floor(Math.random()* Object.keys(list_of_genres).length);
+        let randomGenreNum  = getRandomNumber(0, Object.keys(list_of_genres).length);
+        let keys = Object.keys(list_of_genres);
+        let values = Object.values(list_of_genres);
+        // console.log(keys[randomGenreNum], values[randomGenreNum]);
+        randomGenre[keys[randomGenreNum]] = values[randomGenreNum]; 
+        generateRandomPlaylist(randomGenre);
+    }
+    const generateRandomPlaylist = async(genre)=>{
+        console.log(genre);
+        const token = UICtrl.getStoredToken().token;
+        const playlists = await APICtrl.getPlaylistByGenre(token, genre[Object.keys(genre)[0]]);
+        let randomPlaylistNum = getRandomNumber(0, playlists.length);
+        randomPlaylist = playlists[randomPlaylistNum]
+        // console.log(randomPlaylist);
+        generateRandomTrack(randomPlaylist);
+    }
+    const generateRandomTrack = async(playlist) =>{
+
+        const token = UICtrl.getStoredToken().token;
+        console.log(playlist);
+    }
   document.addEventListener('click', async (e) =>{
        
         // console.log(e.target);
