@@ -242,7 +242,7 @@ const APPController = (function(UICtrl, APICtrl){
         // previewAudio = new Audio(track.preview_url);
         // previewAudio.play();
         UIController.createAudio(track.preview_url);
-        UIController.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
+        UIController.createTrackDetail(track.album.images[1].url, track.name, track.artists[0].name);
         
     });
     // document.addEventListener('click', async (e) =>{
