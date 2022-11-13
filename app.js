@@ -90,7 +90,7 @@ const APIController = (function () {
 })();
 
 const UIController = (function() {
-    
+    let token;
     const DOMElements ={
         selectGenre : '#select_genre',
         selectPlaylist : '#select_playlist',
@@ -100,6 +100,7 @@ const UIController = (function() {
         divSonglist : '.song-list'
     }
     
+    
     return{
 
         inputField() {
@@ -108,9 +109,12 @@ const UIController = (function() {
                 playlist : document.querySelector(DOMElements.selectPlaylist),
                 tracks : document.querySelector(DOMElements.divSonglist),
                 submit : document.querySelector(DOMElements.buttonSubmit),
-                songDetail :document.querySelector(DOMElements.divSongDetail)
+                songDetail : document.querySelector(DOMElements.divSongDetail)
+                
             }
         },
+
+       
 
         createGenre(text, value){
             // const html = `<option value="${value}">${text}</option>`;
@@ -121,9 +125,9 @@ const UIController = (function() {
         },
         
         createGenre(text, value) {
-            const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
-            const button = `<a class="btn-nav" href="{{ url_for('home_bp.home') }}">${text}</a>`
+            // const html = `<option value="${value}">${text}</option>`;
+            // document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
+            const button = `<a class="btn-nav" href="#">${text}</a>`
             // console.log(button);
             document.querySelector('#nav').insertAdjacentHTML('beforeend', button);
         }, 
@@ -170,12 +174,17 @@ const UIController = (function() {
             this.resetTracks();
         },
         storeToken(value){
+            // token = value;
             document.querySelector(DOMElements.hfToken).value = value;
         },
         getStoredToken(){
             return{
                 token : document.querySelector(DOMElements.hfToken).value
+                // token: token
             }
+        },
+        getRandomTrack(){
+
         }
         
 
@@ -184,67 +193,113 @@ const UIController = (function() {
 
 
 const APPController = (function(UICtrl, APICtrl){
-
+    let randomNumber;
+    let list_of_genres = [];
     const DOMInputs = UICtrl.inputField();
-
+    console.log(DOMInputs);
+    
     const loadGenre = async() =>{
         const token = await APICtrl.getToken();
         UICtrl.storeToken(token);
         
         const genres = await APICtrl.getGenres(token);
-        // console.log(genres);
+
         genres.forEach(element => {
+            list_of_genres[element.name] =element.id;
             UICtrl.createGenre(element.name, element.id);
         });
+       console.log(list_of_genres);
+       generateRandomGenre();
     }
 
-    DOMInputs.genre.addEventListener('change', async () =>{
-        UICtrl.resetPlaylist();
-
-        const token = UICtrl.getStoredToken().token;
-        const genreSelect = UICtrl.inputField().genre;
-
-        const genreId = genreSelect.options[genreSelect.selectedIndex].value;
+    const generateRandomGenre = async()=> {
+        let randomGenreNum = Math.floor(Math.random()* Object.keys(list_of_genres).length);
+        console.log(randomGenreNum);
         
-        const playlist = await APICtrl.getPlaylistByGenre(token, genreId);  
-
-        playlist.forEach(element =>{
-            // console.log(element);
-            UICtrl.createPlaylist(element.name, element.tracks.href);
-        });
-
-    });
-
-    DOMInputs.submit.addEventListener('click', async (e) =>{
-        e.preventDefault();
-        UICtrl.resetTracks();
-
-        const token = UICtrl.getStoredToken().token;
-        const playlistSelect = UICtrl.inputField().playlist;
-        const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
-        const tracks = await APICtrl.getTracks(token, tracksEndPoint);
-        // console.log(tracks);
-        tracks.forEach(element =>{
-            UICtrl.createTrack(element.track.href, element.track.name)
-        })
-
-    });
-   
-    DOMInputs.tracks.addEventListener('click', async (e) =>{
-        previewAudio.pause();
-        e.preventDefault();
-        UICtrl.resetTrackDetail();
-        const token = UICtrl.getStoredToken().token;
-        const trackEndPoint = e.target.id;
+    }
+    
+  document.addEventListener('click', async (e) =>{
+       
         // console.log(e.target);
-        const track = await APIController.getTrack(token, trackEndPoint);
-        // console.log(track)
-        // previewAudio = new Audio(track.preview_url);
-        // previewAudio.play();
-        UIController.createAudio(track.preview_url);
-        UIController.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
+        if(e.target && e.target.className == 'btn-nav'){
+            
+            console.log(e.target);
+            previewAudio.pause();
+            e.preventDefault();
+            // UIController.resetTrackDetail();
+            const token = UICtrl.getStoredToken().token;
+            // const playlistSelect = UICtrl.inputField().genreBtns;
+            // console.log(playlistSelect);
+        }
+    })
         
-    });
+    // DOMInputs.genre.addEventListener('change', async () =>{
+    //     UICtrl.resetPlaylist();
+
+    //     const token = UICtrl.getStoredToken().token;
+    //     const genreSelect = UICtrl.inputField().genre;
+
+    //     const genreId = genreSelect.options[genreSelect.selectedIndex].value;
+        
+    //     const playlist = await APICtrl.getPlaylistByGenre(token, genreId);  
+
+    //     playlist.forEach(element =>{
+    //         // console.log(element);
+    //         UICtrl.createPlaylist(element.name, element.tracks.href);
+    //     });
+
+    // });
+    //  document.addEventListener('click', async (e) =>{
+       
+    //     // console.log(e.target);
+    //     if(e.target && e.target.className == 'btn-nav'){
+            
+    //         console.log(e.target.text);
+    //         previewAudio.pause();
+    //         e.preventDefault();
+    //         UIController.resetTrackDetail();
+    //         const token = UICtrl.getStoredToken().token;
+    //         // const playlistSelect = UICtrl.inputField().genreBtns;
+    //         // console.log(playlistSelect);
+    //     }
+        
+
+    // });
+    // DOMInputs.submit.addEventListener('click', async (e) =>{
+    //     e.preventDefault();
+    //     UICtrl.resetTracks();
+
+    //     const token = UICtrl.getStoredToken().token;
+    //     const playlistSelect = UICtrl.inputField().playlist;
+        
+    //     UIController.resetTrackDetail();
+    //     const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
+    //     console.log(playlistSelect.options[playlistSelect.selectedIndex]);
+    //     const tracks = await APICtrl.getTracks(token, tracksEndPoint);
+    //     // console.log(tracks);
+    //     tracks.forEach(element =>{
+    //         UICtrl.createTrack(element.track.href, element.track.name)
+    //     })
+
+    // });
+   
+    // DOMInputs.tracks.addEventListener('click', async (e) =>{
+    //     previewAudio.pause();
+    //     e.preventDefault();
+    //     UICtrl.resetTrackDetail();
+    //     const token = UICtrl.getStoredToken().token;
+    //     const trackEndPoint = e.target.id;
+    //     // console.log(e.target);
+    //     const track = await APIController.getTrack(token, trackEndPoint);
+    //     // console.log(track)
+    //     // previewAudio = new Audio(track.preview_url);
+    //     // previewAudio.play();
+    //     console.log(track.preview_url);
+    //     // UIController.createAudio(track.preview_url);
+    //     UIController.createTrackDetail(track.album.images[1].url, track.name, track.artists[0].name);
+        
+    // });
+    
     // document.addEventListener('click', async (e) =>{
     //     if(e.target && e.target.id == 'preview'){
     //         console.log(e.target);
@@ -261,6 +316,8 @@ const APPController = (function(UICtrl, APICtrl){
         init(){
             console.log("App is starting");
             loadGenre();
+            
+            
         }
     }
     

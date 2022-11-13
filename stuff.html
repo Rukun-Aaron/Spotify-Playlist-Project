@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Player</title>
+  </head>
+  <body>
+    <img
+      src="https://27mi124bz6zg1hqy6n192jkb-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/Our-Top-10-Songs-About-School-768x569.png"
+      width="300"
+      height="300"
+      style="object-fit: cover;"
+      id="img"
+    />
+    <audio
+      id="audio"
+      src="https://p.scdn.co/mp3-preview/7f7397cfeec0bbc4ccc5bfbe80dd9cee948bedc8?cid=71c43d9898df4834804e81bc4b28889c"
+    ></audio>
+    <!--  Keep Html Elements That need to grab in javaScript always on top of 
+    javaScript Code, So It is present to javaScript To Grab & Interact With.-->
+    <script>
+       <!-- Grabbing HTML Elements in JavaScript to Interact -->
+      const img = document.getElementById("img");
+      const audio = document.getElementById("audio");
+      <!--  listen for a 'mouseover' event in audio element -->
+      img.addEventListener("mouseover", () => {
+        <!--  when mouseover event happens we play the audio -->
+        audio.play();
+      });
+      <!--  listen for a 'mouseleave' event in audio element -->
+      img.addEventListener("mouseleave", () => {
+        <!--  when mouseleave event happens we pause the audio and make the audio duration 0 so it again run from start -->
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    </script>
+  </body>
+</html>
