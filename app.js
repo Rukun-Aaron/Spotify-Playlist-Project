@@ -16,7 +16,7 @@ const APIController = (function () {
             body: 'grant_type=client_credentials'
         });
         const data = await result.json();
-        console.log(data);
+        // console.log(data);
         return data.access_token;
     }
 
@@ -92,6 +92,7 @@ const APIController = (function () {
 const UIController = (function() {
     let token;
     const DOMElements ={
+        container :'.container',
         selectGenre : '#select_genre',
         selectPlaylist : '#select_playlist',
         buttonSubmit : '#btn_submit',
@@ -105,6 +106,7 @@ const UIController = (function() {
 
         inputField() {
             return {
+                container: document.querySelector(DOMElements.container),
                 genre : document.querySelector(DOMElements.selectGenre),
                 playlist : document.querySelector(DOMElements.selectPlaylist),
                 tracks : document.querySelector(DOMElements.divSonglist),
@@ -127,7 +129,7 @@ const UIController = (function() {
         createGenre(text, value) {
             // const html = `<option value="${value}">${text}</option>`;
             // document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
-            const button = `<a class="btn-nav" href="#">${text}</a>`
+            const button = `<a class="btn-nav" value="${value}" href="#">${text}</a>`
             // console.log(button);
             document.querySelector('#nav').insertAdjacentHTML('beforeend', button);
         }, 
@@ -158,9 +160,37 @@ const UIController = (function() {
             `;
             detailDiv.insertAdjacentHTML('beforeend',html);
         },
+        createRandomTrack(randomGenre, randomPlaylist, randomTrack){
+            const genre = Object.keys(randomGenre)[0]
+            
+            const playlist = randomPlaylist.name;
+            const track = randomTrack.track.name;
+            const artist = randomTrack.track.artists[0].name;
+            console.log(randomTrack);
+            const span= document.querySelector(DOMElements.container).querySelector("span");
+            const html=
+            `<div style="padding:50px" class="box" >
+            <img class="animate__animated animate__fadeIn single-img" src="${randomTrack.track.album.images[0].url}">
+            </div>
+            <span>
+            <h1 class="title animate__animated animate__fadeIn">${track}</h1>
+            </span>
+            <span>
+            <h1 class="title animate__animated animate__fadeIn">by</h1>
+            </span>
+            <span>
+            <h1 class="title animate__animated animate__fadeIn">${artist}</h1>
+            </span>
+            `
+            span.insertAdjacentHTML('afterend', html);
+        },
+       
         createAudio(preview_url){
             previewAudio = new Audio(preview_url);
             previewAudio.play();
+        },
+        resetContainer(){
+            this.inputField().container.innerHTML = '';
         },
         resetTrackDetail(){
             this.inputField().songDetail.innerHTML = '';
@@ -198,8 +228,7 @@ const APPController = (function(UICtrl, APICtrl){
     let randomPlaylist =[];
     let randomTrack = [];
     let list_of_genres = [];
-    const DOMInputs = UICtrl.inputField();
-    console.log(DOMInputs);
+  
     
     const loadGenre = async() =>{
         const token = await APICtrl.getToken();
@@ -208,10 +237,10 @@ const APPController = (function(UICtrl, APICtrl){
         const genres = await APICtrl.getGenres(token);
 
         genres.forEach(element => {
-            list_of_genres[element.name] =element.id;
+            list_of_genres[element.name] = element.id;
             UICtrl.createGenre(element.name, element.id);
         });
-    //    console.log(list_of_genres);
+  
        generateRandomGenre();
     }
     function getRandomNumber(min, max){
@@ -219,38 +248,48 @@ const APPController = (function(UICtrl, APICtrl){
         return randomGenreNum;
     }
     const generateRandomGenre = async()=> {
-        // let randomGenreNum = Math.floor(Math.random()* Object.keys(list_of_genres).length);
+
         let randomGenreNum  = getRandomNumber(0, Object.keys(list_of_genres).length);
         let keys = Object.keys(list_of_genres);
         let values = Object.values(list_of_genres);
-        // console.log(keys[randomGenreNum], values[randomGenreNum]);
+       
         randomGenre[keys[randomGenreNum]] = values[randomGenreNum]; 
         generateRandomPlaylist(randomGenre);
     }
     const generateRandomPlaylist = async(genre)=>{
-        console.log(genre);
         const token = UICtrl.getStoredToken().token;
         const playlists = await APICtrl.getPlaylistByGenre(token, genre[Object.keys(genre)[0]]);
         let randomPlaylistNum = getRandomNumber(0, playlists.length);
         randomPlaylist = playlists[randomPlaylistNum]
-        // console.log(randomPlaylist);
+        console.log(randomPlaylist)
         generateRandomTrack(randomPlaylist);
     }
     const generateRandomTrack = async(playlist) =>{
 
         const token = UICtrl.getStoredToken().token;
-        console.log(playlist);
+        const tracksEndPoint = playlist.tracks.href;
+        const tracks = await APICtrl.getTracks(token, tracksEndPoint);
+        let randomTrackNum = getRandomNumber(0, tracks.length);
+        randomTrack = tracks[randomTrackNum];
+        // console.log(randomTrack);
+        UIController.createRandomTrack(randomGenre, randomPlaylist, randomTrack);
+
     }
+   
   document.addEventListener('click', async (e) =>{
        
         // console.log(e.target);
         if(e.target && e.target.className == 'btn-nav'){
-            
+            UICtrl.resetContainer();
+
             console.log(e.target);
             previewAudio.pause();
             e.preventDefault();
             // UIController.resetTrackDetail();
             const token = UICtrl.getStoredToken().token;
+            const genreId = e.target.getAttribute("value");
+            const playlist = await APICtrl.getPlaylistByGenre(token, genreId);
+            console.log(playlist);
             // const playlistSelect = UICtrl.inputField().genreBtns;
             // console.log(playlistSelect);
         }

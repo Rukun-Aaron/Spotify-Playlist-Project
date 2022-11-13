@@ -31,22 +31,25 @@
   line-height: 25px;
   width: 100%;
   padding-top: 4% !important;
-  /* align-items: center !important; */
+  align-items: center !important;
   justify-content: center !important;
   display: flex;
+  flex-direction: column;
+  max-width: 45ch;
  
   min-height: 50vh;
 }
 .container >span> .title{
     font-size: 4rem;
     font-weight: bold;
-    text-align: center;
+    text-align: center; 
     /* font-size: min(14vw, 4rem); */
     color : #E94560 !important;
   }
-.container > span{
-    
-}
+  .container > span> h1{
+    color:#E94560 !important;
+  }
+
   #header {
     padding: 20px;
     background-color: #16213E;
@@ -66,6 +69,26 @@
     transform-origin:center;
     transform:perspective(800px) rotateY(25deg);
     transition:0.5s;
+  }
+  .single-img{
+    transform: perspective(800px) rotateY(15deg);
+  }
+  .box{
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .box img{
+    width:500px !important;
+    height: 500px!important;
+  }
+  .box:hover img{
+    opacity:0.3;
+  }
+  .box img:hover {
+    transform:perspective(800px)       rotateY(0deg);
+    opacity:1;
   }
   #song-detail:hover img {
     opacity:0.3;
