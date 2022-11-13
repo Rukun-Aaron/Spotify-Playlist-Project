@@ -138,6 +138,15 @@ const UIController = (function() {
             const html = `<option value="${value}">${text}</option>`;
             document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
         },
+        createPlaylistPreview(text, value){
+            const html = 
+            `
+            <div class="playlist-preview">
+            
+            
+            </div>
+            `
+        },
         createTrack(id, name){
             const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
             document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
@@ -213,9 +222,7 @@ const UIController = (function() {
                 // token: token
             }
         },
-        getRandomTrack(){
-
-        }
+      
         
 
     }
@@ -290,6 +297,11 @@ const APPController = (function(UICtrl, APICtrl){
             const genreId = e.target.getAttribute("value");
             const playlist = await APICtrl.getPlaylistByGenre(token, genreId);
             console.log(playlist);
+            playlist.forEach(async element =>{
+                tracks = await APICtrl.getTracks(token,element.tracks.href);
+                console.log(element.tracks);
+                UICtrl.createPlaylistPreview(element.name, element.tracks.href);
+            })
             // const playlistSelect = UICtrl.inputField().genreBtns;
             // console.log(playlistSelect);
         }
