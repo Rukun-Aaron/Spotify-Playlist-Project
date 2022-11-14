@@ -3,7 +3,7 @@ body {
     margin: 0px;  
     height: 100vh;
     
-    display: grid;
+    /* display: grid; */
     place-items: center;
   }
   

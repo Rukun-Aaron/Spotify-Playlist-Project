@@ -139,13 +139,23 @@ const UIController = (function() {
             document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
         },
         createPlaylistPreview(text, value){
-            const html = 
+            // const html = 
+            // `
+            // <div class="playlist-preview">
+            
+            
+            // </div>
+            // `
+            const html =
             `
-            <div class="playlist-preview">
-            
-            
+            <div id="playlist-preview">
             </div>
-            `
+            <script>
+            $.get("preview.html", function(data){
+                $("#playlist-preview").replaceWith(data);
+            });
+            </script>`
+            $(".container").prepend(html);
         },
         createTrack(id, name){
             const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
@@ -297,11 +307,13 @@ const APPController = (function(UICtrl, APICtrl){
             const genreId = e.target.getAttribute("value");
             const playlist = await APICtrl.getPlaylistByGenre(token, genreId);
             console.log(playlist);
-            playlist.forEach(async element =>{
-                tracks = await APICtrl.getTracks(token,element.tracks.href);
-                console.log(element.tracks);
-                UICtrl.createPlaylistPreview(element.name, element.tracks.href);
-            })
+            UICtrl.createPlaylistPreview(playlist[0].name, playlist[0].tracks.href);
+           
+            // playlist.forEach(async element =>{
+            //     tracks = await APICtrl.getTracks(token,element.tracks.href);
+            //     console.log(element.tracks);
+            //     UICtrl.createPlaylistPreview(element.name, element.tracks.href);
+            // })
             // const playlistSelect = UICtrl.inputField().genreBtns;
             // console.log(playlistSelect);
         }
