@@ -16,7 +16,7 @@
   font-size: medium;    
   /* background-color:#000; */
   
-  /* display:grid; */
+  display:grid !important;
   /* place-items:center; */
   }
   h1 {
