@@ -129,7 +129,7 @@ const UIController = (function() {
         createGenre(text, value) {
             // const html = `<option value="${value}">${text}</option>`;
             // document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
-            const button = `<a class="btn-nav" value="${value}" href="#">${text}</a>`
+            const button = `<a class="btn-nav" value="${value}" href="preview.html">${text}</a>`
             // console.log(button);
             document.querySelector('#nav').insertAdjacentHTML('beforeend', button);
         }, 
@@ -155,7 +155,7 @@ const UIController = (function() {
                 $("#playlist-preview").replaceWith(data);
             });
             </script>`
-            $(".container").prepend(html);
+            $("body").append(html);
         },
         createTrack(id, name){
             const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
@@ -297,6 +297,7 @@ const APPController = (function(UICtrl, APICtrl){
        
         // console.log(e.target);
         if(e.target && e.target.className == 'btn-nav'){
+            // window.location.href="preview.html";
             UICtrl.resetContainer();
 
             console.log(e.target);

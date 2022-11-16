@@ -1,4 +1,28 @@
 <link rel="stylesheet" type="text/css" href="previewStyle.css">
+<div id="nav-placeholder">
+
+</div>
+
+<!-- <script>
+    $.get("nav.html", function(data){
+        $("#nav-placeholder").replaceWith(data);
+    });
+    </script> -->
+<!-- <nav id="nav">
+    
+  <h2 id="nav-header">Genres</h2>
+  <a class="btn-nav" href="{{ url_for('home_bp.home') }}">Home</a>
+  <a class="btn-nav" href="{{ url_for('authentication_bp.register') }}">Register</a>
+  <a class="btn-nav" href="{{ url_for('authentication_bp.login') }}">Login</a>
+  <a class="btn-nav" href="{{ url_for('authentication_bp.logout') }}">Logout</a>
+  <a class="btn-nav" href="{{ url_for('profile_bp.favourites') }}">Favourites</a>
+  <a class="btn-nav" href="{{ url_for('track_blueprint.track') }}">
+    Browse songs
+  </a>
+  <a class="btn-nav" href="{{ url_for('profile_bp.recommended_tracks') }}">Tracks For You</a>
+
+  </nav> -->
+  <div class="grid-wrapper">
 <div class="card-swiper">
     <div class="card-groups">
       <div class="card-group" data-index="0" data-status="active">
@@ -80,6 +104,7 @@
         </div>
       </div>
     </div>
+    
     <div class="card-swiper-buttons">
       <button id="hate-button" onclick="handleHateClick()">
         <i class="fa-solid fa-x"></i>
@@ -89,6 +114,7 @@
       </button>
     </div>
   </div>
+</div>
 <!--   
   <a id="source-link" class="meta-link" href="https://kippo.com/chill" target="_blank">
     <i class="fa-solid fa-link"></i>
